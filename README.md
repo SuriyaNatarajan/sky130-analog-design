@@ -1,19 +1,58 @@
-# Analog LeetCode Lab
+# sky130 Analog Design
 
-## ⚠️ CRITICAL RULE: How to Launch Xschem ⚠️
+Analog building blocks designed by hand on the open-source SkyWater 130 nm PDK.
+Each block follows the same loop: **spec → hand calculation → prediction → simulation → corners → write-up**.
 
-Because the SkyWater 130nm PDK configuration file (\xschemrc\) is located in the **root** of this repository, you must **always** launch Xschem from the root directory. 
+## Arcs
 
-If you \cd\ into a subfolder (like \phase0_device_physics\) and run \xschem\, the tool will not find the \xschemrc\ file, and the component libraries will completely fail to load.
+| Arc | Block | Status |
+|---|---|---|
+| A0 | Device characterization (nfet/pfet gm/Id) | 🔄 in progress |
+| A1 | Common-source amplifier from a spec | ⬜ |
+| A2 | Current mirrors + bias with startup | ⬜ |
+| A3 | Differential pair → 5-transistor OTA | ⬜ |
+| A4 | Two-stage Miller OTA (corners, Monte Carlo, stability) | ⬜ |
+| A5 | Noise analysis | ⬜ |
+| A6 | Bandgap reference | ⬜ |
+| A7 | LDO regulator | ⬜ |
+| A8 | StrongARM comparator | ⬜ |
+| A9 | SAR ADC | ⬜ |
+| A10 | PLL | ⬜ |
+| L | Layout track (DRC/LVS/PEX) | ⬜ |
 
-### The Correct Workflow:
-Always keep your terminal in the root directory (\~/analog_lab\). To create or open a schematic in a subfolder, pass the relative path directly to the command:
+Each finished arc has its own folder (`a0_…`, `a1_…`) with a README covering design decisions and results.
 
-\\ash
-# 1. Ensure you are in the root directory
-cd ~/analog_lab
+## Repository layout
 
-# 2. Launch Xschem while pointing it to the subfolder
-xschem phase0_device_physics/prob01_ekv.sch
-\
-This ensures Xschem reads the root configuration file to load the Sky130 PDK, while keeping your actual \.sch\ files cleanly organized in their respective phase folders.
+```
+a0_device_char/   current arc
+lut/              gm/Id lookup tables: techsweep schematics, txt→mat notebooks, LUT examples
+                  (the .mat files are generated, not committed)
+scripts/          reusable helpers
+xschemrc          sky130 xschem configuration (launch xschem from this folder)
+requirements.txt  Python packages
+```
+
+## Setup
+
+| Tool | Version |
+|---|---|
+| sky130 PDK (volare) | `c6d73a35f524070e85faff4a6a9eef49553ebc2b` |
+| ngspice | 45.2 |
+| xschem | 3.4.8RC |
+| Python | 3.14, packages in `requirements.txt` |
+
+```bash
+export PDK_ROOT=$HOME/pdk PDK=sky130A
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+```
+
+Netlists include the models through the stable symlink path, never the volare version hash:
+```spice
+.lib ~/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice tt
+```
+
+Launch xschem from the repository root so it picks up `xschemrc`:
+```bash
+xschem a0_device_char/prob01_ekv.sch
+```
