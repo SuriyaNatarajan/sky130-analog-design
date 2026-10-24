@@ -29,3 +29,8 @@ venv/
 # 5. OS & Editor Temp Files
 *~
 *.swp
+
+# 6. Script-generated testbenches and result tables
+temp_*.sp
+*_out.txt
+*_out.md
