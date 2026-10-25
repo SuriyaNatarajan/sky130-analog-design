@@ -5,6 +5,6 @@ V_VGS GATE 0 DC 0.9
 V_VDS DRN 0 DC 0.9  
 .control
 dc V_VGS 0 1.8 0.01
-plot -i(V_VDS)
+plot 1/(deriv(ln(-i(V_VDS))))
 .endc
 .end
